@@ -1077,7 +1077,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
         stopAutoLevel: function() {
             // connect to cnccontroller for probe responses
             chilipeppr.unsubscribe("/com-chilipeppr-interface-cnccontroller/proberesponse",this, this.probeResponse);
-            
+            chilipeppr.publish("/com-chilipeppr-widget-grbl-autolevel/probing", false);
             this.isPaused = true;
             $('.com-chilipeppr-widget-autolevel-stop').popover('hide');
             $('.com-chilipeppr-widget-autolevel-pause').popover('hide');
@@ -1235,6 +1235,8 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 // we are just starting
                 this.status("Starting probes");
                 this.currentStep = 0;
+                chilipeppr.publish("/com-chilipeppr-widget-grbl-autolevel/probing", true);
+  
             } else {
                 this.currentStep++;
             }
@@ -1250,6 +1252,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 this.send(g);
                 this.status("Done running probe. Found all Zs for " + this.probes.length + " locations");
                 this.stopAutoLevel();
+                chilipeppr.publish("/com-chilipeppr-widget-grbl-autolevel/probing", false);
                 
                 // store file automatically
                 var fileStr = JSON.stringify(this.probes);

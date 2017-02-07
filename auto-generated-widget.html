@@ -191,10 +191,10 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
     
     return {
         id: "com-chilipeppr-widget-autolevel",
-        url: "http://raw.githubusercontent.com/raykholo/grbl-widget-autolevel/master/auto-generated-widget.html",       // The final URL of the working widget as a single HTML file with CSS and Javascript inlined. You can let runme.js auto fill this if you are using Cloud9.
-        fiddleurl: "http://ide.c9.io/raykholo/grbl-widget-autolevel", // The edit URL. This can be auto-filled by runme.js in Cloud9 if you'd like, or just define it on your own to help people know where they can edit/fork your widget
-        githuburl: "http://github.com/raykholo/grbl-widget-autolevel", // The backing github repo
-        testurl: "http://grbl-widget-autolevel-raykholo.c9users.io/widget.html",   // The standalone working widget so can view it working by itself
+        url: "http://raw.githubusercontent.com/jpadie/widget-grbl-autolevel/master/auto-generated-widget.html",       // The final URL of the working widget as a single HTML file with CSS and Javascript inlined. You can let runme.js auto fill this if you are using Cloud9.
+        fiddleurl: "http://ide.c9.io/jpadie/grblautolevel", // The edit URL. This can be auto-filled by runme.js in Cloud9 if you'd like, or just define it on your own to help people know where they can edit/fork your widget
+        githuburl: "http://github.com/jpadie/widget-grbl-autolevel", // The backing github repo
+        testurl: "http://grblautolevel-jpadie.c9users.io/widget.html",   // The standalone working widget so can view it working by itself
         name: "Widget / Auto-Level",
         desc: "Allows you to auto-level your PCB before milling. Most raw PCB boards have a slight warpage. This widget lets you probe the warpage and then it auto-scales your Gcode to match the warpage so you get very clean/predictable z-positions in your milling job.",
         publish: {
@@ -1168,7 +1168,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
         stopAutoLevel: function() {
             // connect to cnccontroller for probe responses
             chilipeppr.unsubscribe("/com-chilipeppr-interface-cnccontroller/proberesponse",this, this.probeResponse);
-            
+            chilipeppr.publish("/com-chilipeppr-widget-grbl-autolevel/probing", false);
             this.isPaused = true;
             $('.com-chilipeppr-widget-autolevel-stop').popover('hide');
             $('.com-chilipeppr-widget-autolevel-pause').popover('hide');
@@ -1326,6 +1326,8 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 // we are just starting
                 this.status("Starting probes");
                 this.currentStep = 0;
+                chilipeppr.publish("/com-chilipeppr-widget-grbl-autolevel/probing", true);
+  
             } else {
                 this.currentStep++;
             }
@@ -1341,6 +1343,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 this.send(g);
                 this.status("Done running probe. Found all Zs for " + this.probes.length + " locations");
                 this.stopAutoLevel();
+                chilipeppr.publish("/com-chilipeppr-widget-grbl-autolevel/probing", false);
                 
                 // store file automatically
                 var fileStr = JSON.stringify(this.probes);
