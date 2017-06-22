@@ -1,6 +1,6 @@
 requirejs.config({
     paths: {
-        Three: '//i2dcui.appspot.com/geturl?url=http://threejs.org/build/three.js',
+      //  Three: '//i2dcui.appspot.com/geturl?url=http://threejs.org/build/three.js',
         ThreeTextGeometry: '//i2dcui.appspot.com/js/three/TextGeometry',
         ThreeFontUtils: '//i2dcui.appspot.com/js/three/FontUtils',
         ThreeHelvetiker: '//i2dcui.appspot.com/js/three/threehelvetiker'
@@ -372,8 +372,13 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 var that = this;
                 that.previousLayerOpacities = [];
                 o.children.forEach(function iterLayers(lyr) {
-                    that.previousLayerOpacities.push(lyr.material.opacity);
-                    lyr.material.opacity = 0.035;
+                    //added by jpadie to cater for unhandled bugs when material and/or opacity 
+                    //is not defined for the material property
+                    if (lyr.material == undefined || lyr.material.opacity == undefined) {}
+                    else{            
+                        that.previousLayerOpacities.push(lyr.material.opacity);
+                        lyr.material.opacity = 0.035;
+                    }
                 });
                 this.isFadeOutUserObject = true;
             }
@@ -1364,8 +1369,15 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             
             var stepsevery = $('#com-chilipeppr-widget-autolevel-body .grid-steps').val();
             stepsevery = parseFloat(stepsevery);
+            
+            /*
             var endx = stepsevery * (parseInt((b.box.max.x - b.box.min.x) / stepsevery,10) + 1);
             var endy = stepsevery * (parseInt((b.box.max.y - b.box.min.y) / stepsevery,10) + 1);
+            */
+            //added by jpadie to cater for non-vertex origins
+            var endx = stepsevery * (parseInt((b.box.max.x - b.box.min.x) / stepsevery,10) + 1) + b.box.min.x;
+            var endy = stepsevery * (parseInt((b.box.max.y - b.box.min.y) / stepsevery,10) + 1) + b.box.min.y;
+            
             
             //bbox.box.min.x
             $('#com-chilipeppr-widget-autolevel-body .start-x').val(b.box.min.x);
