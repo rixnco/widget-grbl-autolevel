@@ -1911,7 +1911,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 							elem=elem.replace(_comments[1], '^'+ counter);
 							counter++;
 							_comments = comment.exec(elem);
-						};
+						}
 					}
 					if(command.test(elem)){
 						result = command.exec(elem);
@@ -2087,7 +2087,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 	
 			var interpolateLine = function (start, end){
 				var returnArray = [];
-				var max
+				
 				['x','y','z'].forEach(function(axis, index, that){
 					if(typeof end[axis] === "undefined"){
 						end[axis] = start[axis];
@@ -2114,7 +2114,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 				}
 			};
 	
-			var interpolateCircle = function (start,offset,clockwise=true){
+			var interpolateCircle = function (start,offset,clockwise){
 				var returnArray = [];
 				var origin = {	x:	start.x + offset.i,
 								y:	start.y + offset.j,
@@ -2163,7 +2163,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 			
 			};
 	
-			var interpolateArc = function(start, end, offset, clockwise = true){
+			var interpolateArc = function(start, end, offset, clockwise){
 				['x','y','z'].forEach(function(axis, index, that){
 					if(typeof end[axis] === "undefined"){
 						end[axis] = start[axis];
@@ -2223,9 +2223,11 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 				return parseFloat(variable);
 			};
 			return {
-				interpolate: function(gcode, _maxDistance = 5){
+				interpolate: function(gcode, _maxDistance){
 					input = gcode;
-					maxDistance = _maxDistance;
+					if(typeof _maxDistance == "number"){
+					    maxDistance = _maxDistance;
+					}
 					parseGcode();
 					return output;
 				}
