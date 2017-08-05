@@ -12,6 +12,7 @@ requirejs.config({
         ThreeHelvetiker: ['Three', 'ThreeTextGeometry', 'ThreeFontUtils'],
     }
 });
+//make change
 
 
 // make sure Helvetiker loads
