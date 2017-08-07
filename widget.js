@@ -432,7 +432,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 breakLongGCmdsIntoMoreZ: false
             };
 
-            if (opts !== null) {
+            if (opts !== null && typeof opts != "undefined") {
                 options = opts;
             }
             
@@ -474,6 +474,9 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 breakLongGCmdsIntoMoreZ: true
                }
             */
+            if(typeof options == "undefined"){
+                options = {};
+            }
             if($('.com-chilipeppr-widget-autolevel-toggleInterpolate').hasClass('btn-success')){
             	options.breakLongGCmdsIntoMoreZ = true;
             }
@@ -492,11 +495,16 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 gcode = this.user3dObject;
             }
             console.log("gcode:", gcode);
-			
+			if(gcode.length == 0){
+			    this.autolevelledGcode = [];
+			    return this.autolevelledGcode;
+			    
+			}
 			if(options.breakLongGCmdsIntoMoreZ){
 				var steps = parseFloat($('.grid-steps').val());
 				if(isNaN(steps) || steps == 0) steps = 5;
 				gcode = this.interPolator.interpolate(gcode,steps);
+			    console.log('interpolated gcode', gcode);
 			}
 
             var newgcode = [];
