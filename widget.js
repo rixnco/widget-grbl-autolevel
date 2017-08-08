@@ -490,6 +490,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             // and raycast to adjust the z.
             // then we can update all widgets with the new gcode to
             // apply the envelope
+            var newgcode = [];
             var gcode = this.user3dObject;
             if (gcode === null) {
                 console.log("getting 3d obj from 3d viewer");
@@ -502,14 +503,6 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 return this.autolevelledGcode;
 
             }
-            if (options.breakLongGCmdsIntoMoreZ) {
-                var steps = parseFloat($('.grid-steps').val());
-                if (isNaN(steps) || steps == 0) steps = 5;
-                gcode = this.interPolator.interpolate(gcode, steps);
-                console.log('interpolated gcode', gcode);
-            }
-
-            var newgcode = [];
 
             // unfade so we can see results
             //this.unfadeOutUserObject();
@@ -539,6 +532,34 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             var ctrGCmd = 0;
             var ctrGCmdRayIntersected = 0;
             var ctrGCmdNotValid = 0;
+
+            if (options.breakLongGCmdsIntoMoreZ) {
+                var steps = parseFloat($('.grid-steps').val());
+                if (isNaN(steps) || steps == 0) steps = 5;
+
+                var _gcode = this.interPolator.interpolate(gcode, steps); //interpolate gcode into smaller steps.
+                //need to raycast interpolated code here.
+                var gcodetxt = _gcode.join("\n");
+                var info = {
+                    name: "Interpolated gCode for auto-levelling" + gcodetxt.substring(0, 20),
+                    lastModified: new Date()
+                };
+                console.log("info:", info);
+                // send event off as if the file was drag/dropped
+                chilipeppr.publish("/com-chilipeppr-elem-dragdrop/ondropped", gcodetxt, info);
+                gcodetxt = _gcode = null;
+            }
+
+
+            /* it would be more memory efficient to do this on the fly, line by line. */
+            
+            
+            var gcode = this.user3dObject;
+            if (gcode === null) {
+                console.log("getting 3d obj from 3d viewer");
+                this.get3dObjectFrom3dViewer();
+                gcode = this.user3dObject;
+            }
             gcode.userData.lines.forEach(function(item) {
                 // see if gcode line has z val
                 var newgcodeline = "";
@@ -618,7 +639,6 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 else {
                     newgcodeline = "huh? no gcode text???";
                 }
-
                 // push onto final array of gcode
                 newgcode.push(newgcodeline);
 
@@ -1901,6 +1921,8 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 
         },
         interPolator: (function() {
+            var interpolatorDebug = false;
+            var originalGCode = [];
             var input = [];
             var output = [];
             var maxDistance = 5;
@@ -2157,7 +2179,9 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                             end = {};
                     }
                 });
-                console.log(mapping);
+                if (interpolatorDebug) {
+                    console.log(mapping);
+                }
                 return output;
             };
 
@@ -2310,12 +2334,25 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 if (isNaN(variable)) return false;
                 return parseFloat(variable);
             };
+            var extractGCode = function() {
+                originalGCode.userData.lines.forEach(function(item) {
+                    if ('origtext' in item.args) {
+                        input.push(item.args.origtext);
+                    }
+                    else if ('text' in item.args) {
+                        input.push(item.args.text);
+                    }
+                });
+            };
+
             return {
-                interpolate: function(gcode, _maxDistance) {
-                    input = gcode;
+                interpolate: function(gcode, _maxDistance, _interpolatorDebug) {
+                    originalGCode = gcode;
+                    interpolatorDebug = typeof _interpolatorDebug == "boolean" ? interpolatorDebug : false;
                     if (typeof _maxDistance == "number") {
                         maxDistance = _maxDistance;
                     }
+                    extractGCode();
                     parseGcode();
                     return output;
                 }
