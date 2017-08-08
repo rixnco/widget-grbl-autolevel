@@ -134,7 +134,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             $('.com-chilipeppr-widget-autolevel-pause').click(this.pause.bind(this));
             $('.com-chilipeppr-widget-autolevel-toggleInterpolate').on('click', function() {
                 $(this).toggleClass('btn-success');
-            }); //.hide();
+            }).hide();
 
             // toggleprobearea
             $('.com-chilipeppr-widget-autolevel-toggleprobearea').click(this.toggleProbeArea.bind(this));
