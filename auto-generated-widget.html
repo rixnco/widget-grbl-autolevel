@@ -2426,6 +2426,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 return parseFloat(variable);
             };
             var extractGCode = function() {
+                console.error(originalGCode);
                 originalGCode.userData.lines.forEach(function(item) {
                     if ('origtext' in item.args) {
                         input.push(item.args.origtext);
@@ -2439,7 +2440,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             return {
                 interpolate: function(gcode, _maxDistance, _interpolatorDebug) {
                     originalGCode = gcode;
-                    interpolatorDebug = typeof _interpolatorDebug == "boolean" ? interpolatorDebug : true; //for debugging only
+                    interpolatorDebug = typeof _interpolatorDebug == "boolean" ? interpolatorDebug : true; //for debugging only       
                     if (typeof _maxDistance == "number") {
                         maxDistance = _maxDistance;
                     }
