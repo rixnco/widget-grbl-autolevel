@@ -537,7 +537,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 var steps = parseFloat($('.grid-steps').val());
                 if (isNaN(steps) || steps == 0) steps = 5;
 
-                var _gcode = this.interPolator.interpolate(gcode, steps); //interpolate gcode into smaller steps.
+                var _gcode = this.interPolator.interpolate(gcode, steps, true); //interpolate gcode into smaller steps.
                 //need to raycast interpolated code here.
                 var gcodetxt = _gcode.join("\n");
                 var info = {
@@ -2119,7 +2119,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                                                 lineCounter++;
                                             }
                                             else {
-                                                rValue.forEach(function(e, index, that) {
+                                                rValue.forEach(function(e, index) {
                                                     if (hasFeedrate && index == 0) {
                                                         e = e + " F" + feedRate;
                                                     }
@@ -2133,7 +2133,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                                                     output.push("N" + lineCounter + " " + e);
                                                     addMapping(oCodeNum, e);
                                                     lineCounter++;
-                                                }, this);
+                                                });
                                             }
                                         }
                                         else {
@@ -2147,7 +2147,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                                                 lineCounter++;
                                             }
                                             else {
-                                                rValue.forEach(function(e, index, that) {
+                                                rValue.forEach(function(e, index) {
                                                     if (hasFeedrate && index == 0) {
                                                         e = e + " F" + feedRate;
                                                     }
@@ -2161,7 +2161,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                                                     output.push("N" + lineCounter + " " + e);
                                                     addMapping(oCodeNum, e);
                                                     lineCounter++;
-                                                }, this);
+                                                });
                                             }
 
                                         }
@@ -2180,7 +2180,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                     }
                 });
                 if (interpolatorDebug) {
-                    console.log(mapping);
+                    console.error('gcode mapping', mapping);
                 }
                 return output;
             };
@@ -2348,7 +2348,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             return {
                 interpolate: function(gcode, _maxDistance, _interpolatorDebug) {
                     originalGCode = gcode;
-                    interpolatorDebug = typeof _interpolatorDebug == "boolean" ? interpolatorDebug : false;
+                    interpolatorDebug = typeof _interpolatorDebug == "boolean" ? interpolatorDebug : true; //for debugging only
                     if (typeof _maxDistance == "number") {
                         maxDistance = _maxDistance;
                     }
