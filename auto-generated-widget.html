@@ -2228,7 +2228,8 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
 					return false;
 				}
 				var circumference = Math.PI * 2 * radius;
-				if(circumference > maxDistance){
+				var qArc = Math.sqrt( 2* radius * radius);
+				if(qArc > maxDistance){
 					//hmmm
 					/* 
 					 easiest is to calculate the angle of the starting point from due north.
