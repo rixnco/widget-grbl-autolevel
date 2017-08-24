@@ -1359,6 +1359,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             //console.log("probes:", this.probes);
         },
         currentStep: null, // keep track of which step we're on
+        currentStep: null, // keep track of which step we're on
         isPaused: false,
         pause: function() {
             // remove popovers
@@ -1399,7 +1400,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             else {
                 this.currentStep++;
                 console.warn("AUTOLEVEL WIDGET: moving to next probe point.");
-                autolevel.status("moving to next probe point");
+                this.status("moving to next probe point");
             }
 
             if (this.currentStep >= this.probes.length) {
@@ -2009,7 +2010,6 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                     pubsubviewer.attachTo($(topCssSelector + ' .panel-heading .dropdown .dropdown-menu'), that);
                 });
             });
-
         },
         interPolator: (function() {
             var interpolatorDebug = false;
@@ -2019,16 +2019,30 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             var maxDistance = 5;
             var lineCounter = 0;
             var mapping = [];
-            var addMapping = function(codeNum, elem) {
-                console.log("adding mapping", codeNum, elem);
+            var addMapping = function(codeNum, elem, o) {
                 if (typeof mapping[codeNum] == "undefined") {
-                    mapping[codeNum] = [elem];
+                    mapping[codeNum] = {original:o, rewritten: []};
                 }
-                else {
-                    mapping[codeNum].push(elem);
-                }
+				if(elem != ''){
+					mapping[codeNum].rewritten.push(elem);
+				}
             };
 
+			var outputMapping = function(){
+				var t = $('<table></table>');
+				var tr = $('<tr><td class="index"></td><td class="originalElement"></td><td class="replacementElement"></td></tr>');
+				
+				mapping.forEach(function(elem, index){
+					var row = $(tr).clone(true);
+					row.find('.index').text(index);
+					row.find('originalElement').text(elem.original);
+					row.find('replacementElement').text(elem.rewritten.join("<br/>\n"));
+					row.appendTo(t);
+				});
+				
+				var w = window.open();
+				$(w.document.body).html(t);
+			};
             var parseGcode = function() {
                 var curPos = { x: 0, y: 0, z: 0 };
                 var lastCommand = '';
@@ -2052,11 +2066,12 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
                 var oCodeNum = -1;
                 var originalElement = '';
                 var safeZ = parseFloat($('.high-z').val());
+				var mapping = [];
 
                 input.forEach(function(elem) {
-                    mapping = [];
-                    oCodeNum++;
-                    var result;
+					oCodeNum++;
+                    addMapping(oCodeNum, elem);
+					var result;
                     var comments = [];
                     elem = elem.trim();
                     elem = elem.replace(lineNumber, '');
