@@ -1914,7 +1914,7 @@ cpdefine("inline:com-chilipeppr-widget-autolevel", ["chilipeppr_ready", "ThreeHe
             });
 
             var that = this;
-            chilipeppr.load("http://fiddle.jshell.net/chilipeppr/zMbL9/show/light/", function() {
+            chilipeppr.load("http://raw.githubusercontent.com/rixnco/widget-pubsubviewer/master/auto-generated-widget.html", function() {
                 require(['inline:com-chilipeppr-elem-pubsubviewer'], function(pubsubviewer) {
                     pubsubviewer.attachTo($(topCssSelector + ' .panel-heading .dropdown .dropdown-menu'), that);
                 });
